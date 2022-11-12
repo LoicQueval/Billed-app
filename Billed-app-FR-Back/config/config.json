@@ -12,7 +12,8 @@
     "password": null,
     "database": "database_test",
     "dialect": "sqlite",
-    "storage": "./database_test.sqlite"
+    "storage": "./database_test.sqlite",
+    "logging": false
   },
   "production": {
     "username": "root",

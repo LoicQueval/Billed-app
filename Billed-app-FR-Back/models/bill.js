@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
     }
-  };
+  }
   Bill.init({
     vat: DataTypes.NUMBER,
     status: DataTypes.STRING,
