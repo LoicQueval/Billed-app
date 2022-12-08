@@ -2,10 +2,10 @@
  * @jest-environment jsdom
  */
 
-import {screen, waitFor} from '@testing-library/dom'
+import {screen, waitFor, fireEvent} from '@testing-library/dom'
 import BillsUI from '../views/BillsUI.js'
 import {bills} from '../fixtures/bills.js'
-import {ROUTES_PATH} from '../constants/routes.js'
+import { ROUTES, ROUTES_PATH } from "../constants/routes"
 import {localStorageMock} from '../__mocks__/localStorage.js'
 import Bills from '../containers/Bills.js'
 import mockStore from '../__mocks__/store'
@@ -61,9 +61,12 @@ describe('Given I am connected as an employee', () => {
             windowIcon.click()
             expect(handleClick).toBeCalled()
         })
-        /* test('Then NewBills btn should be navigate to NewBill page', async () => {
+         test('Then NewBills btn should navigate to NewBill page', async () => {
+            const mockOnNavigate = (pathname) => {
+              document.body.innerHTML = ROUTES({ pathname })
+            }
              const billsContainer = new Bills({
-                 document, onNavigate, store: null, localStorage: window.localStorage
+                 document, onNavigate: mockOnNavigate, store: null, localStorage: window.localStorage
              })
              document.body.innerHTML = BillsUI({data: bills})
              await waitFor(() => screen.getByTestId('btn-new-bill'))
@@ -76,7 +79,6 @@ describe('Given I am connected as an employee', () => {
              windowIcon2.click()
              expect(handleClickNewBill).toBeCalled()
          })
-             */
         test('Then the bills are fetched from the simulated API GET', async () => {
             window.onNavigate(ROUTES_PATH.Bills)
             await waitFor(() => screen.getByText('Mes notes de frais'))
