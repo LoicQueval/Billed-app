@@ -9,7 +9,6 @@ export default class NewBill {
         const formNewBill = this.document.querySelector(`form[data-testid="form-new-bill"]`)
         formNewBill.addEventListener('submit', this.handleSubmit)
         const file = this.document.querySelector(`input[data-testid="file"]`)
-        file.setAttribute('accept', ".png, .jpg, .jpeg")
         file.addEventListener('change', this.handleChangeFile)
         this.fileUrl = null
         this.fileName = null
@@ -20,27 +19,46 @@ export default class NewBill {
     handleChangeFile = e => {
         e.preventDefault()
         const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
+        const formData = new FormData()
         const filePath = e.target.value.split(/\\/g)
         const fileName = filePath[filePath.length - 1]
-        const formData = new FormData()
         const email = JSON.parse(localStorage.getItem('user')).email
+        const fileExtension = fileName.split('.').pop();
+        const errorMessage = this.document.querySelector(
+            `span[data-testid='error-file-extension']`
+        );
         formData.append('file', file)
         formData.append('email', email)
 
-        this.store
-            .bills()
-            .create({
-                data: formData,
-                headers: {
-                    noContentType: true
-                }
-            })
-            .then(({fileUrl, key}) => {
-                console.log(fileUrl)
-                this.billId = key
-                this.fileUrl = fileUrl
-                this.fileName = fileName
-            }).catch(error => console.error(error))
+        if (errorMessage) {
+            errorMessage.remove();
+        }
+
+        const validExtension = ['jpeg', 'jpg', 'png']
+        if (!validExtension.includes(fileExtension.toLowerCase())) {
+            e.target.value = '';
+            this.document.querySelector(`input[data-testid="file"]`).value = null
+            this.document.querySelector(`input[data-testid="file"]`).insertAdjacentHTML(
+                'afterEnd',
+                '<span data-testid=\'error-file-extension\'> Vous devez selectionner un fichier avec une extension <em>.jpg, .jpeg </em> ou <em>.png </em></span>'
+            );
+        } else {
+            this.store
+                .bills()
+                .create({
+                    data: formData,
+                    headers: {
+                        noContentType: true
+                    }
+                })
+                .then(({fileUrl, key}) => {
+                    console.log(fileUrl)
+                    this.billId = key
+                    this.fileUrl = fileUrl
+                    this.fileName = fileName
+                }).catch(error => console.error(error))
+        }
+
     }
     handleSubmit = e => {
         e.preventDefault()
